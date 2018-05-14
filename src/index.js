@@ -11,7 +11,7 @@ function calculateWinner(squares) {
     [1, 4, 7],
     [2, 5, 8],
     [0, 4, 8],
-    [2, 4, 6],
+    [2, 4, 6]
   ];
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
@@ -34,31 +34,41 @@ class Board extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      squares: Array(9).fill(null),
-      xIsNext: true,
+      history: [
+        {
+          squares: Array(9).fill(null)
+        }
+      ],
+      xIsNext: true
     };
   }
 
   handleClick(i) {
-    const squares = this.state.squares.slice();
+    const squares = this.state.history[
+      this.state.history.length - 1
+    ].squares.slice();
     if (calculateWinner(squares) || squares[i]) {
       return;
     }
     squares[i] = this.state.xIsNext ? 'X' : 'O';
-    this.setState({ squares, xIsNext: !this.state.xIsNext });
+    const history = this.state.history.slice();
+    history.push({ squares });
+    console.log(history);
+    this.setState({ history, xIsNext: !this.state.xIsNext });
   }
 
   renderSquare(i) {
     return (
       <Square
-        value={this.state.squares[i]}
+        value={this.state.history[this.state.history.length - 1].squares[i]}
         onClick={() => this.handleClick(i)}
       />
     );
   }
 
   render() {
-    const winner = calculateWinner(this.state.squares);
+    console.log(this.state.history[this.state.history.length - 1].squares);
+    const winner = calculateWinner(this.state.history[this.state.history.length - 1].squares);
     let status;
     if (winner) {
       status = `Winner: ${winner}`;
